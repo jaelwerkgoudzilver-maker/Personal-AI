@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Personal AI</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f172a">
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 0;
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+    header {
+      padding: 16px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    main {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    textarea, input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+    }
+    button {
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: #22c55e;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .card {
+      background: #020617;
+      padding: 12px;
+      border-radius: 12px;
+    }
+  </style>
+</head>
+<body>
+  <header>🧠 Personal AI</header>
+  <main>
+    <div class="card">
+      <input id="title" placeholder="Titel" />
+      <textarea id="content" rows="4" placeholder="Schrijf hier wat je wilt onthouden..."></textarea>
+      <button onclick="saveNote()">Opslaan</button>
+    </div>
+
+    <div class="card">
+      <h3>Mijn notities</h3>
+      <ul id="list"></ul>
+    </div>
+  </main>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+  }
+
+  function load() {
+    const notes = JSON.parse(localStorage.getItem('notes') || '[]');
+    const ul = document.getElementById('list');
+    ul.innerHTML = '';
+    notes.forEach(n => {
+      const li = document.createElement('li');
+      li.textContent = n.title + ': ' + n.content;
+      ul.appendChild(li);
+    });
+  }
+
+  function saveNote() {
+    const title = document.getElementById('title').value;
+    const content = document.getElementById('content').value;
+    if (!title || !content) return;
+    const notes = JSON.parse(localStorage.getItem('notes') || '[]');
+    notes.unshift({ title, content });
+    localStorage.setItem('notes', JSON.stringify(notes));
+    document.getElementById('title').value = '';
+    document.getElementById('content').value = '';
+    load();
+  }
+
+  load();
+</script>
+</body>
+</html>
